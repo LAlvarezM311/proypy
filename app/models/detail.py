@@ -11,9 +11,10 @@ class SaleDetail(db.Model):
     qnt_prod_sale = db.Column(db.Integer, nullable=False)  # Cantidad vendida de un producto, no nulo
 
     # Columnas foráneas
-    sale_id = db.Column(db.Integer, db.ForeignKey('Ventas.id'), primary_key=True)  # Referencia a la tabla 'sale'
-    product_id = db.Column(db.Integer, db.ForeignKey('Products.id'), primary_key=True)  # Referencia a la tabla 'product'
-
+    sale_id = db.Column(db.Integer, db.ForeignKey('Ventas.id'), nullable=False)  # Referencia a la tabla 'sale'
+    product_id = db.Column(db.Integer, db.ForeignKey('Products.id'), nullable=False)  # Referencia a la tabla 'product'
+    
+   
     # Relación muchos a muchos con productos usando la tabla intermedia 'sale_detail'
     product = db.relationship('Product', backref=db.backref('Detalle_Venta', lazy=True))  # Permite acceso inverso desde ventas a productos
     sale = db.relationship('Sale', backref=db.backref('Detalle_Venta', lazy=True))  # Permite acceso inverso desde ventas a productos
@@ -30,3 +31,4 @@ class SaleDetail(db.Model):
         self.qnt_prod_sale = qnt_prod_sale
         self.sale_id = sale_id
         self.product_id = product_id
+        

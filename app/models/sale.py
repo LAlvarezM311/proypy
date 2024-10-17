@@ -2,10 +2,10 @@ from app import db
 import enum
 
 class StateEnum(enum.Enum):
-    IN_PROGRESS=0
-    REGISTERED=1
-    PAID=2
-    NULLED=3
+    IN_PROGRESS= 0
+    REGISTERED= 1
+    PAID= 2
+    NULLED= 3
 
 
 class Sale(db.Model):

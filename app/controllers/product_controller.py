@@ -6,26 +6,24 @@ from app.services.product_service import ProductService
 product_ns = Namespace('Products', description='Operaciones relacionadas con los productos')
 
 # Definir el modelo de entrada de product para la documentación de Swagger
-product_model = product_ns.model('Product', {
+product_model = product_ns.model('Products', {
     'name': fields.String(required=True, description='Nombre del Producto'),
     'image': fields.String(required=True, description='Imagen del Producto'),
     'description': fields.String(required=True, description='Descripción del Producto'),
     'price': fields.Integer(required=True, description='Precio del Producto'),
     'quantity': fields.Integer(required=True, description='Cantidad en existencia del Producto'),
-    'shop_id': fields.Integer(required=True, description='Id de la tienda a la queu pertenece el producto')
+    'shop_id': fields.Integer(required=True, description='Id de la tienda a la que pertenece el Producto')
 })
 
 # Definir el modelo de salida de product para la documentación de Swagger
-product_response_model = product_ns.model('ProductResponse', {
+product_response_model = product_ns.model('ProductsResponse', {
     'id': fields.Integer(description='ID del Producto'),
+    'name': fields.String(description='Nombre del Producto'),    
     'image': fields.String(required=True, description='Imagen del Producto'),
     'description': fields.String(required=True, description='Descripción del Producto'),
     'price': fields.Integer(required=True, description='Precio del Producto'),
     'quantity': fields.Integer(required=True, description='Cantidad en existencia del Producto'),
-    'shops': fields.List(fields.Nested(product_ns.model('Shop', {
-        'id': fields.Integer(description='ID de la tienda'),
-        'name': fields.String(description='Nombre de la tienda')
-    })), description='Lista de tienda asociada al producto')
+    'shop_id': fields.Integer(required=True, description='ID de la tienda')
 })
 
 
@@ -76,7 +74,7 @@ class ProductResource(Resource):
         """Actualizar un producto por su ID"""
         data = request.get_json()
         try:
-            product = ProductService.update_product(product_id, data['name'])
+            product = ProductService.update_product(product_id, data['name'], data['image'], data['description'], data['price'], data['quantity'])
             return product, 200
         except ValueError as e:
             return {'message': str(e)}, 404

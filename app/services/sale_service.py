@@ -1,19 +1,20 @@
 from app import db
-from app.models.sale import Sale
+from app.models.sale import Sale, StateEnum
 from app.models.product import Product
+import enum
 
 class SaleService:
     """Servicio para manejar las operaciones CRUD y lógicas de las ventas."""
 
     @staticmethod
-    def create_sale(date, total, status, products_ids):
+    def create_sale(date, total, status):
         """Crear una nueva venta con productos asociados.
         
         Args:
             date (date): Fecha de la venta.
             total (int): Valor total de la venta.
             status (enum): Estado de la transacción.
-            products_ids (List[int]): Lista de IDs de productos a asociar.
+            
 
         Returns:
             Sale: La nueva venta creada.
@@ -21,14 +22,11 @@ class SaleService:
         Raises:
             ValueError: Si los productos especificados no existen.
         """
-        # Obtener los productos asociados filtrando por los IDs proporcionados
-        products = Product.query.filter(Product.id.in_(products_ids)).all()
+
         
-        # Crear una nueva instancia de Sale con la fecha, total y el estado 'en proceso (IN_PROGRESS=0)'
-        new_sale = Sale(date=date, total=total, status=0)
+        # Crear una nueva instancia de Sale 
+        new_sale = Sale(date=date, total=total, status=StateEnum(status))
         
-        # Asociar los productos a la venta
-        new_sale.products = products
         
         # Agregar la nueva venta a la sesión de base de datos
         db.session.add(new_sale)
@@ -39,7 +37,7 @@ class SaleService:
         return new_sale
 
     @staticmethod
-    def update_sale(sale_id, date=None, total=None, status=None, products_ids=None):
+    def update_sale(sale_id, date=None, total=None, status=None):
         """Actualizar los detalles de una venta existente o en proceso.
         
         Args:
@@ -47,7 +45,7 @@ class SaleService:
             date (date): Fecha de la venta.
             total (int): Valor total de la venta.
             status (enum): Estado de la transacción.
-            products_ids (List[int]): Lista de IDs de productos a asociar.
+            
 
         Returns:
             Sale: La Venta actualizada.
@@ -72,13 +70,8 @@ class SaleService:
         
         # Si se proporcionó un nuevo estado de Venta, actualizarlo
         if status is not None:
-            sale.status = status
-        
-        # Si se proporcionaron nuevos productos, actualizarlos
-        if products_ids:
-            products = Product.query.filter(Product.id.in_(products_ids)).all()
-            sale.products = products
-        
+            sale.status = StateEnum(status)      
+       
         # Confirmar los cambios y actualizar la venta en la base de datos
         db.session.commit()
         
@@ -138,7 +131,7 @@ class SaleService:
             raise ValueError('Sale not found')
         
         # Marcar la Venta como pagada
-        sale.status = 2
+        sale.status = StateEnum.PAID
         
         # Confirmar los cambios
         db.session.commit()
@@ -166,7 +159,7 @@ class SaleService:
             raise ValueError('Sale not found')
                 
         # Marcar la venta en proceso
-        sale.status = 0
+        sale.status = StateEnum.IN_PROGRESS
         
         # Confirmar los cambios
         db.session.commit()

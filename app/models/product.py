@@ -1,6 +1,7 @@
 from app import db
 from app.models.shop import Shop
 
+
 class Product(db.Model):
     """
     Modelo que representa un producto en el sistema.
@@ -31,6 +32,7 @@ class Product(db.Model):
     # Relación con el modelo Shops
     shop = db.relationship('Shop', backref='Products')  # Define la relación con el modelo Shops y permite acceso inverso desde Shops a Products
 
+    
     def __init__(self, name, image, description, price, quantity, shop_id):
         """
         Constructor de la clase Products.
